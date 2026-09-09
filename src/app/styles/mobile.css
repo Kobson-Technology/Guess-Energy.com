@@ -692,12 +692,19 @@
   }
 }
 
+/* Filtres mobiles masqués sur desktop (affichés uniquement ≤ 640px) */
+.filters-mobile {
+  display: none;
+}
+
+
 /* ════════════════════════════════════════════════════════════
    14. FILTRES MOBILES (COMPOSANT)
    ════════════════════════════════════════════════════════════ */
 
 @media (max-width: 640px) {
   .filters-mobile {
+    display: block;
     margin-bottom: 16px;
   }
   
