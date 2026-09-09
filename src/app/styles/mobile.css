@@ -935,3 +935,28 @@
     width: 60%;
   }
 }
+
+/* ════════════════════════════════════════════════════════════
+   18. PAGE CONTACT — BADGES SOUS LE FORMULAIRE (MOBILE)
+   ════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .contact-grid {
+    /* Surcharge des styles inline : 1 colonne, formulaire avant les badges */
+    grid-template-columns: 1fr !important;
+    grid-template-areas:
+      'info'
+      'form'
+      'badges' !important;
+    gap: 20px !important;
+  }
+
+  .contact-grid > div[style*='info'],
+  .contact-grid > div:nth-child(1) {
+    margin-bottom: 4px;
+  }
+
+  .contact-grid .value-card {
+    padding: 16px;
+  }
+}
