@@ -13,10 +13,12 @@ interface Message {
 
 const QUICK_REPLIES = [
   'Nos produits',
+  'Nos services',
   'Demander un devis',
   "Horaires d'ouverture",
   'Nous contacter',
   'Livraison',
+  'Paiement',
 ];
 
 function buildFallbackText(query: string): { text: string; rawOptions?: string[] } {
@@ -42,6 +44,14 @@ function buildFallbackText(query: string): { text: string; rawOptions?: string[]
       text: "Nous livrons dans toute la Côte d'Ivoire ! La livraison est GRATUITE à partir de 100 000 FCFA d'achat. En dessous, les frais de livraison sont de 5 000 FCFA. Le délai de livraison est de 24 à 72h selon votre localité.",
       rawOptions: ['Nos produits', 'Demander un devis', 'Nous contacter'],
     },
+    'nos services': {
+      text: "GUESS ENERGY propose :\n\nDistribution de matériels électriques (gros et détail)\nTravaux électriques : installation, pose, montage sur chantiers\nBureau d'études : analyse des besoins et dimensionnement\nSAV : suivi, assistance et maintenance après installation",
+      rawOptions: ['Nos produits', 'Demander un devis', 'Nous contacter'],
+    },
+    'paiement': {
+      text: "Aucun paiement en ligne pour le moment : après votre commande, notre équipe vous contacte par téléphone ou WhatsApp pour confirmer les modalités de paiement et de livraison.",
+      rawOptions: ['Nous contacter', 'Nos produits', 'Demander un devis'],
+    },
     'voir le catalogue': {
       text: "Notre catalogue est disponible en ligne ! Vous pouvez parcourir nos catégories, voir les prix et disponibilités en temps réel.",
       rawOptions: ['Voir le catalogue', 'Demander un devis', 'Nous contacter'],
@@ -64,6 +74,18 @@ function buildFallbackText(query: string): { text: string; rawOptions?: string[]
   if (lower.includes('horaire') || lower.includes('ouvert') || lower.includes('heure')) return map["horaires d'ouverture"];
   if (lower.includes('contact') || lower.includes('téléphone') || lower.includes('email') || lower.includes('adresse')) return map['nous contacter'];
   if (lower.includes('livraison') || lower.includes('expédition') || lower.includes('délai')) return map['livraison'];
+  if (lower.includes('service') || lower.includes('installation') || lower.includes('travaux') || lower.includes('chantier') || lower.includes('maintenance') || lower.includes('sav') || lower.includes('étude')) return map['nos services'];
+  if (lower.includes('paiement') || lower.includes('payer') || lower.includes('mobile money') || lower.includes('wave') || lower.includes('orange money') || lower.includes('carte')) return map['paiement'];
+  if (lower.includes('solaire') || lower.includes('photovoltaïque') || lower.includes('panneau') || lower.includes('batterie'))
+    return { text: "Nous proposons des solutions d'énergies renouvelables : panneaux photovoltaïques, convertisseurs solaires et hybrides, régulateurs de charge, batteries lithium et gel. Demandez un devis pour une solution adaptée !", rawOptions: ['Demander un devis', 'Nos produits', 'Nous contacter'] };
+  if (lower.includes('groupe') || lower.includes('électrogène') || lower.includes('générateur'))
+    return { text: "Nous vendons, installons et mettons en service des groupes électrogènes pour l'énergie de secours. Contactez-nous pour un dimensionnement adapté à vos besoins !", rawOptions: ['Demander un devis', 'Nous contacter', 'Nos produits'] };
+  if (lower.includes('stock') || lower.includes('disponible') || lower.includes('rupture'))
+    return { text: "Les disponibilités affichées sur le site proviennent en temps réel de notre système de gestion Kobson GesCom et sont revérifiées au moment de la commande. Pour un produit en rupture, demandez un devis personnalisé !", rawOptions: ['Nos produits', 'Demander un devis', 'Nous contacter'] };
+  if (lower.includes('compte') || lower.includes('inscription') || lower.includes('connexion'))
+    return { text: "Bonne nouvelle : vous pouvez commander sans créer de compte, en tant que visiteur, en laissant simplement vos coordonnées de contact !", rawOptions: ['Nos produits', 'Demander un devis', 'Nous contacter'] };
+  if (lower.includes('annuler') || lower.includes('modifier') || lower.includes('suivi'))
+    return { text: "Pour modifier ou annuler une commande, contactez notre équipe par téléphone ou WhatsApp en précisant votre numéro de commande.", rawOptions: ['Nous contacter', 'Nos produits', 'Demander un devis'] };
 
   return map.default;
 }

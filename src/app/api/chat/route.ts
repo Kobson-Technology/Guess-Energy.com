@@ -3,6 +3,7 @@ import { createGroq } from '@ai-sdk/groq';
 import { NextRequest, NextResponse } from 'next/server';
 import { productService } from '@/services/product.service';
 import { siteService } from '@/services/site.service';
+import { getRelevantKnowledge } from '@/lib/chatbot-knowledge';
 
 const MAX_HISTORY_MESSAGES = 10;
 
@@ -23,7 +24,7 @@ async function searchRelevantProducts(query: string) {
   }
 }
 
-function buildSystemPrompt(products: Array<{ id: number; nom: string; reference: string; prixTtc: number; enStock: boolean; stock: number; categorie: string }>, shop: { phone?: string | null; email?: string | null; address?: string | null; city?: string | null }) {
+function buildSystemPrompt(products: Array<{ id: number; nom: string; reference: string; prixTtc: number; enStock: boolean; stock: number; categorie: string }>, shop: { phone?: string | null; email?: string | null; address?: string | null; city?: string | null }, query: string) {
   const productContext = products.length > 0
     ? 'CATALOGUE DE PRODUITS DISPONIBLE (donnees reelles, ne jamais inventer de prix ou stock) :\n' + products.map((p) =>
         `- ${p.nom} (ref ${p.reference || ''}) - ${p.prixTtc.toLocaleString('fr-FR')} FCFA TTC${p.enStock ? '' : ' - RUPTURE DE STOCK'} - stock: ${p.stock} - ${p.categorie}`).join('\n') + '\n'
@@ -35,20 +36,19 @@ function buildSystemPrompt(products: Array<{ id: number; nom: string; reference:
     (shop.address || shop.city) ? `Adresse : ${[shop.address, shop.city].filter(Boolean).join(', ')}` : null,
   ].filter(Boolean).map((l) => `- ${l}.`).join('\n');
 
+  const knowledge = getRelevantKnowledge(query);
+
   return [
     "Tu es l'assistant virtuel de GUESS ENERGY SARL, distributeur professionnel de materiel electrique en Cote d'Ivoire.",
     "Tu reponds en francais, courtoisement, precisement et de facon concise.",
     "N'utilise PAS de formatage Markdown (pas de **, *, #, listes a puces) : reponds en texte simple, avec des retours a la ligne si necessaire.",
     "",
-    "INFORMATIONS COMMERCIALES :",
-    "- Catalogue : materiel electrique (cables, disjoncteurs, tableaux electriques, eclairage LED, groupes electrogenes, panneaux solaires, batteries).",
-    "- Livraison en Cote d'Ivoire : GRATUITE a partir de 100 000 FCFA d'achat, sinon 5 000 FCFA.",
-    "- Delais de livraison : 24 a 72h selon la zone.",
-    "- Paiement : aucun paiement en ligne, confirmation par telephone ou WhatsApp.",
-    "- Horaires : Lundi-Samedi 08h00-18h00, Dimanche ferme.",
-    "- Pour un devis : /devis. Pour voir les produits : /produits.",
-    "- WhatsApp : +225 07 00 00 00 00.",
+    "BASE DE CONNAISSANCES (utilise ces informations pour repondre, elles font foi) :",
+    knowledge,
+    "",
+    "COORDONNEES ACTUELLES (prioritaires sur la base de connaissances si differentes) :",
     contactLines,
+    "- WhatsApp : +225 07 00 00 00 00.",
     "",
     productContext,
     "REGLE CRITIQUE :",
@@ -62,17 +62,33 @@ function buildSystemPrompt(products: Array<{ id: number; nom: string; reference:
 }
 
 function buildFallbackText(query: string): string {
-  const lower = query.toLowerCase().trim();
-  if (lower.includes('produit') || lower.includes('catalogue') || lower.includes('acheter'))
+  const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const q = norm(query.trim());
+  const has = (...keys: string[]) => keys.some((k) => q.includes(norm(k)));
+  if (has('produit', 'catalogue', 'acheter'))
     return "Nous proposons une large gamme de materiel electrique : cables, disjoncteurs, tableaux, eclairage LED, groupes electrogenes, panneaux solaires et bien plus. Visitez notre catalogue pour decouvrir tous nos produits !";
-  if (lower.includes('devis') || lower.includes('prix') || lower.includes('cout'))
-    return "Pour demander un devis, ajoutez les produits souhaitez a votre panier puis rendez-vous sur la page Demander un devis. Notre equipe vous repondra sous 24h !";
-  if (lower.includes('horaire') || lower.includes('ouvert') || lower.includes('heure'))
+  if (has('devis', 'prix', 'cout', 'tarif'))
+    return "Pour demander un devis, ajoutez les produits souhaites a votre panier puis rendez-vous sur la page Demander un devis. Notre equipe vous repondra sous 24h !";
+  if (has('horaire', 'ouvert', 'heure'))
     return "Nous sommes ouverts du Lundi au Samedi de 08h00 a 18h00. Le dimanche nous sommes fermes. N'hesitez pas a nous contacter par WhatsApp en dehors de ces heures !";
-  if (lower.includes('contact') || lower.includes('telephone') || lower.includes('email') || lower.includes('adresse'))
+  if (has('contact', 'telephone', 'email', 'adresse'))
     return "Vous pouvez nous contacter par : Telephone +225 07 00 00 00 00, Email contact@guess-energy.ci, Adresse Abidjan (Cote d'Ivoire), WhatsApp 24h/24.";
-  if (lower.includes('livraison') || lower.includes('expedition') || lower.includes('delai'))
+  if (has('livraison', 'expedition', 'delai'))
     return "Nous livrons dans toute la Cote d'Ivoire : livraison GRATUITE a partir de 100 000 FCFA, sinon 5 000 FCFA. Delai de 24 a 72h selon la zone.";
+  if (has('paiement', 'payer', 'mobile money', 'wave', 'orange money', 'carte'))
+    return "Aucun paiement en ligne pour le moment : apres votre commande, notre equipe vous contacte par telephone ou WhatsApp pour confirmer les modalites de paiement et de livraison.";
+  if (has('service', 'installation', 'travaux', 'chantier', 'maintenance', 'sav'))
+    return "GUESS ENERGY propose : distribution de materiel electrique, travaux electriques (installation, pose, montage), bureau d'etudes et dimensionnement, et service apres-vente. Visitez notre page Services pour en savoir plus !";
+  if (has('solaire', 'photovoltaique', 'panneau', 'batterie', 'lithium', 'gel'))
+    return "Nous proposons des solutions d'energies renouvelables : panneaux photovoltaiques, convertisseurs solaires et hybrides, regulateurs de charge, batteries lithium et gel. Demandez un devis pour une solution adaptee !";
+  if (has('groupe', 'electrogene', 'generateur'))
+    return "Nous vendons, installons et mettons en service des groupes electrogenes pour l'energie de secours. Contactez-nous pour un dimensionnement adapte a vos besoins !";
+  if (has('stock', 'disponible', 'rupture'))
+    return "Les disponibilites affichees sur le site proviennent en temps reel de notre systeme de gestion Kobson GesCom et sont revérifiees au moment de la commande. Pour un produit en rupture, demandez un devis personnalise !";
+  if (has('compte', 'inscription', 'connexion'))
+    return "Bonne nouvelle : vous pouvez commander sans creer de compte, en tant que visiteur, en laissant simplement vos coordonnees de contact !";
+  if (has('annuler', 'modifier', 'suivi', 'suivre'))
+    return "Pour modifier ou annuler une commande, contactez notre equipe par telephone ou WhatsApp en precisant votre numero de commande.";
   return "Merci pour votre message ! Je suis l'assistant virtuel de GUESS ENERGY. Comment puis-je vous aider aujourd'hui ?";
 }
 
@@ -85,11 +101,11 @@ export async function POST(request: NextRequest) {
       return new NextResponse(buildFallbackText(''), { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
     }
 
-    const history = body.messages
+    const history: Array<{ role: 'user' | 'assistant'; content: string }> = body.messages
       .filter((m: { role?: string; content?: string }) => typeof m.content === 'string' && m.content.trim() !== '')
       .slice(-MAX_HISTORY_MESSAGES)
       .map((m: { role?: string; content?: string }) => ({
-        role: m.role === 'assistant' ? 'assistant' : 'user',
+        role: m.role === 'assistant' ? ('assistant' as const) : ('user' as const),
         content: m.content as string,
       }));
 
@@ -102,7 +118,9 @@ export async function POST(request: NextRequest) {
 
     const shop = await siteService.getShopInfo().catch(() => ({})) as { phone?: string | null; email?: string | null; address?: string | null; city?: string | null };
     const products = await searchRelevantProducts(lastUserQuery);
-    const systemPrompt = buildSystemPrompt(products, shop);
+    // Regroupe les 3 dernières questions de l'utilisateur pour la sélection des connaissances
+    const knowledgeQuery = history.filter((m) => m.role === 'user').slice(-3).map((m) => m.content).join(' ');
+    const systemPrompt = buildSystemPrompt(products, shop, knowledgeQuery);
 
     const groq = createGroq({ apiKey: GROQ_API_KEY });
 
