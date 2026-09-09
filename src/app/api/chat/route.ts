@@ -68,7 +68,7 @@ function buildSystemPrompt(products: Array<{ id: number; nom: string; reference:
     .trim();
 }
 
-function buildFallbackText(query: string): string {
+function buildFallbackText(query: string, shop?: { phone?: string | null; email?: string | null; address?: string | null; city?: string | null }): string {
   const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const q = norm(query.trim());
   const has = (...keys: string[]) => keys.some((k) => q.includes(norm(k)));
@@ -78,8 +78,15 @@ function buildFallbackText(query: string): string {
     return "Pour demander un devis, ajoutez les produits souhaites a votre panier puis rendez-vous sur la page Demander un devis. Notre equipe vous repondra sous 24h !";
   if (has('horaire', 'ouvert', 'heure'))
     return "Nous sommes ouverts du Lundi au Samedi de 08h00 a 18h00. Le dimanche nous sommes fermes. N'hesitez pas a nous contacter par WhatsApp en dehors de ces heures !";
-  if (has('contact', 'telephone', 'email', 'adresse'))
-    return "Vous pouvez nous contacter par : Telephone +225 07 00 00 00 00, Email contact@guess-energy.ci, Adresse Abidjan (Cote d'Ivoire), WhatsApp 24h/24.";
+  if (has('contact', 'telephone', 'email', 'adresse')) {
+    const parts: string[] = [];
+    if (shop?.phone) parts.push(`Telephone ${shop.phone}`);
+    if (shop?.email) parts.push(`Email ${shop.email}`);
+    if (shop?.address) parts.push(`Adresse ${shop.address}${shop.city ? ` (${shop.city})` : ''}`);
+    if (parts.length === 0) parts.push('via notre page /contact');
+    else parts.push('WhatsApp 24h/24');
+    return `Vous pouvez nous contacter par : ${parts.join(', ')}.`;
+  }
   if (has('livraison', 'expedition', 'delai'))
     return "Nous livrons dans toute la Cote d'Ivoire : livraison GRATUITE a partir de 100 000 FCFA, sinon 5 000 FCFA. Delai de 24 a 72h selon la zone.";
   if (has('paiement', 'payer', 'mobile money', 'wave', 'orange money', 'carte'))
@@ -102,10 +109,13 @@ function buildFallbackText(query: string): string {
 export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
+  // Infos de la table Boutiques : disponibles pour le prompt IA ET les fallbacks (une seule requete)
+  const shop = await siteService.getShopInfo().catch(() => ({})) as { phone?: string | null; email?: string | null; address?: string | null; city?: string | null };
+
   try {
     const body = await request.json().catch(() => null);
     if (!body || !Array.isArray(body.messages)) {
-      return new NextResponse(buildFallbackText(''), { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+      return new NextResponse(buildFallbackText('', shop), { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
     }
 
     const history: Array<{ role: 'user' | 'assistant'; content: string }> = body.messages
@@ -120,10 +130,9 @@ export async function POST(request: NextRequest) {
 
     const GROQ_API_KEY = process.env.GROQ_API_KEY;
     if (!GROQ_API_KEY) {
-      return new NextResponse(buildFallbackText(lastUserQuery), { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+      return new NextResponse(buildFallbackText(lastUserQuery, shop), { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
     }
 
-    const shop = await siteService.getShopInfo().catch(() => ({})) as { phone?: string | null; email?: string | null; address?: string | null; city?: string | null };
     const products = await searchRelevantProducts(lastUserQuery);
     // Regroupe les 3 dernières questions de l'utilisateur pour la sélection des connaissances
     const knowledgeQuery = history.filter((m) => m.role === 'user').slice(-3).map((m) => m.content).join(' ');
@@ -144,6 +153,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (err) {
     console.error('[API chat]', err);
-    return new NextResponse(buildFallbackText(''), { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+    return new NextResponse(buildFallbackText('', shop), { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
   }
 }
