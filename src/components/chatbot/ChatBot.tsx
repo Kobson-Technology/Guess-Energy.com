@@ -16,6 +16,9 @@ const QUICK_REPLIES = [
   'Nos services',
   'Demander un devis',
   "Horaires d'ouverture",
+  'Comment commander',
+  'Où êtes-vous ?',
+  'Suivre ma commande',
   'Nous contacter',
   'Livraison',
   'Paiement',
@@ -70,6 +73,18 @@ function buildFallbackText(query: string, shop?: { phone?: string | null; email?
     'aller au devis': {
       text: "Parfait ! Cliquez sur le lien Demander un devis dans le menu, ou accédez directement à notre page devis. Ajoutez des produits à votre panier pour commencer !",
       rawOptions: ['Nos produits', 'Nous contacter', "Horaires d'ouverture"],
+    },
+    'comment commander': {
+      text: "Commander est simple : 1) Parcourez notre catalogue, 2) Ajoutez vos articles au panier, 3) Remplissez vos coordonnées, 4) Envoyez. Notre équipe vous contacte ensuite pour confirmer paiement et livraison.",
+      rawOptions: ['Voir le catalogue', 'Demander un devis', 'Nous contacter'],
+    },
+    'où êtes-vous': {
+      text: "GUESS ENERGY est situé en Côte d'Ivoire. Pour l'adresse exacte, le téléphone et l'email, consultez notre page Contact !",
+      rawOptions: ['Nous contacter', 'Nos produits', 'Demander un devis'],
+    },
+    'suivre ma commande': {
+      text: "Pour suivre votre commande, contactez notre équipe par téléphone ou WhatsApp en précisant votre numéro de commande. Nous vous répondrons rapidement !",
+      rawOptions: ['Nous contacter', 'Nos produits', 'Demander un devis'],
     },
     default: {
       text: "Merci pour votre message ! Je suis l'assistant virtuel de GUESS ENERGY. Comment puis-je vous aider aujourd'hui ?",

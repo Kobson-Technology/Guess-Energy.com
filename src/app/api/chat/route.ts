@@ -103,7 +103,21 @@ function buildFallbackText(query: string, shop?: { phone?: string | null; email?
     return "Bonne nouvelle : vous pouvez commander sans creer de compte, en tant que visiteur, en laissant simplement vos coordonnees de contact !";
   if (has('annuler', 'modifier', 'suivi', 'suivre'))
     return "Pour modifier ou annuler une commande, contactez notre equipe par telephone ou WhatsApp en precisant votre numero de commande.";
-  return "Merci pour votre message ! Je suis l'assistant virtuel de GUESS ENERGY. Comment puis-je vous aider aujourd'hui ?";
+  if (has('bonjour', 'salut', 'bonsoir', 'hello', 'hi', 'coucou', 'hey', 'bonne journee', 'bonne soiree'))
+    return "Bonjour ! Bienvenue chez GUESS ENERGY, votre specialist du materiel electrique en Cote d'Ivoire. Je peux vous renseigner sur nos produits (electricite, eclairage, solaire, groupes electrogenes), nos services, la livraison ou vous aider a demander un devis. Comment puis-je vous aider ?";
+  if (has('merci', 'thanks', 'thank you', 'parfait', 'super', 'excellent'))
+    return "Je vous en prie ! N'hesitez pas si vous avez d'autres questions sur nos produits ou services. C'est un plaisir de vous aider !";
+  if (has('au revoir', 'bye', 'a bientot', 'a plus', 'bonne nuit', 'ciao'))
+    return "Au revoir ! Merci de votre visite chez GUESS ENERGY. N'hesitez pas a revenir si vous avez des questions. Excellente journee !";
+  if (has('qui es tu', 'que fais tu', 'comment ca marche', 'aide', 'votre role'))
+    return "Je suis l'assistant virtuel de GUESS ENERGY, distributeur de materiel electrique en Cote d'Ivoire. Je peux vous renseigner sur nos produits, services, horaires, livraison et vous aider a demander un devis. Posez-moi votre question !";
+  if (has('urgence', 'urgent', 'panne', 'coupure', 'danger', 'securite'))
+    return "Pour une situation urgente (panne, coupure, risque), je vous invite a contacter immediatement notre equipe par telephone ou WhatsApp pour une prise en charge rapide. Si necessaire, coupez d'abord le courant et faites appel a un electricien professionnel.";
+  if (has('comment commander', 'etapes', 'procedure', 'comment acheter', 'comment passer'))
+    return "Commander chez GUESS ENERGY est simple : 1) Parcourez notre catalogue /produits, 2) Ajoutez vos articles au panier, 3) Remplissez le formulaire de commande avec vos coordonnees, 4) Envoyez ! Notre equipe vous contacte ensuite pour confirmer paiement et livraison. Pour un simple prix, demandez un devis via /devis.";
+  if (has('abidjan', 'cocody', 'yopougon', 'bouake', 'yamoussoukro', 'ville', 'zone', 'livrer'))
+    return "Nous livrons dans toute la Cote d'Ivoire ! Livraison GRATUITE a partir de 100 000 FCFA d'achat, sinon 5 000 FCFA, sous 24 a 72h selon votre zone. Dites-nous votre localite, nous vous confirmons le delai !";
+  return "Merci pour votre message ! Je suis l'assistant virtuel de GUESS ENERGY. Je peux vous aider sur : nos produits (electricite, eclairage public, solaire, groupes electrogenes), la livraison, les paiements, la commande ou un devis. Que puis-je faire pour vous aujourd'hui ?";
 }
 
 export const runtime = 'nodejs';
