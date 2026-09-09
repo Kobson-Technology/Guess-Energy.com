@@ -359,6 +359,94 @@ export const KNOWLEDGE_ENTRIES: KnowledgeEntry[] = [
     content:
       "ENTREPRISE : Mission : fournir des matériels fiables et accompagner chaque projet, de l'étude à la mise en œuvre. Atouts : qualité, fiabilité, expertise, large catalogue (4 pôles), prix compétitifs. Redirige vers /a-propos pour plus d'informations.",
   },
+{
+    id: 'nouchi',
+    always: true,
+    keywords: ['walahi', 'gbaka', 'dabali', 'douz', 'yako', 'yaw', 'go', 'maquis', 'wala', 'dja', 'ivoirien', 'abidjanais', 'nouchi'],
+    content:
+      "NOUCHI (ARGOT D'ABIDJAN) : Quand l'utilisateur parle nouchi (argot populaire ivoirien), accueille-le avec son langage pour créer du lien : walahi (vraiment), gbaka (débrouillard), dabali (amateur), onyomo, etc. Comprends l'intention derrière l'argot et réponds en français clair tout en gardant un ton chaleureux et local. Exemple : 'Walahi tu es au bon endroit : solaire, groupes, tableaux… dis-moi ce qu'il te faut, on s'occupe de toi !'",
+  },
+  {
+    id: 'salutations-religieuses',
+    always: true,
+    keywords: ['salam', 'aleykum', 'inna lillah', 'ramadan', 'kareem', 'aid', 'aid el fitr', 'tabaski', 'noel', 'joyeux noel', 'meilleurs voeux', 'bonne annee', 'bon an', 'careme', 'paques', 'baraka'],
+    content:
+      "SALUTATIONS RELIGIEUSES ET FÊTES : Si l'utilisateur te souhaite Salam, Ramadan Mubarak/Kareem, Aïd, Joyeux Noël, Bonne Année ou toute salutation religieuse ou festive, réponds avec la même formule et les vœux appropriés, en restant respectueux et inclusif. Exemple : 'Aleykoum salam ! Qu'Allah te préserve et bienvenue chez GUESS ENERGY. Comment puis-je t'aider aujourd'hui ?' La diversité religieuse (musulmans, chrétiens) est une richesse de la Côte d'Ivoire : reste neutre et bienveillant.",
+  },
+  {
+    id: 'jours-feries',
+    always: true,
+    keywords: ['jour ferie', 'ferie', 'fete nationale', 'independance', 'vacance', 'paques', 'tabaski', 'aid', 'kadhi', 'ramadan', 'vacances scolaires', 'jours chomes', 'ouvert le ferie'],
+    content:
+      "JOURS FÉRIÉS : GUESS ENERGY applique les horaires habituels les jours ouvrés. Les jours fériés officiels et religieux (Fête de l'Indépendance, Nouvel An, Aïd/Tabaski, Pâques, Noël, etc.), la disponibilité peut varier. Précise que pour toute confirmation, le client peut contacter l'équipe via WhatsApp. Ne promets pas une ouverture un jour précis non confirmé.",
+  },
+  {
+    id: 'securite-fraude',
+    always: true,
+    keywords: ['fraude', 'arnaque', 'phishing', 'code secret', 'otp', 'cvc', 'mot de passe', 'pin', 'ne partage pas', 'securite bancaire', 'compte pirater', 'escroquerie', 'hameconnage', 'donnees personnelles'],
+    content:
+      "SÉCURITÉ : GUESS ENERGY ne demandera JAMAIS de code secret, code de carte bancaire, CVV, mot de passe, code reçu par SMS ou identifiants par téléphone ou WhatsApp. Si un visiteur prétend être GUESS ENERGY et demande ces informations, c'est une arnaque : recommande de ne rien communiquer et de contacter directement l'équipe via /contact ou les numéros officiels du site. Rassure que toute la sécurité de la plateforme est gérée par des systèmes fiables.",
+  },
+{
+    id: 'dimensionnement-solaire',
+    keywords: ['combien de panneaux', 'dimensionner', 'quelle puissance solaire', 'pour une maison', 'pour une pharmacie', 'pour une boutique', 'frigo', 'climatiseur', 'ventilo', 'television', 'tv', 'congelateur', 'charge quotidienne', 'watts par jour', 'autoconsommation'],
+    content:
+      "DIMENSIONNEMENT SOLAIRE : Pour bien dimensionner une installation, il faut connaître : les appareils à alimenter (frigo, TV, climatiseur, éclairage), le nombre d'heures d'utilisation, et sa localisation (ensoleillement). Ne donne jamais de dimensionnement exact sans le bureau d'études : redirige vers /devis en invitant l'utilisateur à lister ses appareils. Explique simplement qu'un premier chiffrage rapide est possible avec : puissance totale (W) x heures d'usage = Wh/jour, pour estimer le parc de panneaux et batteries.",
+  },
+  {
+    id: 'dimensionnement-groupe',
+    keywords: ['quelle puissance groupe', 'combien de kva', 'groupe pour maison', 'pour une boutique', 'pour clinique', 'pour immeuble', 'demarrage moteur', 'quelle taille groupe', 'kva necessaire', 'triphase ou monophase'],
+    content:
+      "DIMENSIONNEMENT GROUPE ÉLECTROGÈNE : La puissance nécessaire se calcule en additionnant les appareils branchés simultanément et en prévoyant une marge de sécurité (20-30%). Attention aux appareils avec moteur (frigo, pompe, climatiseur) qui demandent 3 à 5 fois leur puissance au démarrage. Pour un conseil précis, redirige vers /devis avec la liste des appareils. Mentionne que GUESS ENERGY propose de 1 à plus de 2000 kVA (essence, diesel, inverter).",
+  },
+  {
+    id: 'processus-apres-commande',
+    keywords: ['apres la commande', 'apres commande', 'que se passe ensuite', 'etapes suivantes', 'confirmation commande', 'appel de confirmation', 'quand etre contacte', 'prochaine etape', 'suite de ma commande'],
+    content:
+      "PROCESSUS APRÈS COMMANDE : Après validation de la commande : 1) L'équipe reçoit la demande, 2) Elle contacte le client par téléphone ou WhatsApp (souvent dans les 24h ouvrées) pour confirmer la disponibilité, le paiement et la livraison, 3) Le paiement est convenu (espèces, mobile money…), 4) La livraison est organisée selon la zone (24 à 72h). Le client peut aussi suivre via /contact ou WhatsApp.",
+  },
+  {
+    id: 'moyens-paiement-ci',
+    keywords: ['orange money', 'mtn momo', 'mtn mobile money', 'wave', 'moov', 'flooz', 'especes', 'cash', 'virement bancaire', 'cash a la livraison', 'paiement a la livraison', 'comment payer a distance'],
+    content:
+      "MOYENS DE PAIEMENT EN CÔTE D'IVOIRE : Le site n'accepte aucun paiement en ligne. Après commande, l'équipe propose les modalités adaptées : espèces (à livraison ou en boutique), mobile money (Orange Money, MTN MoMo, Wave, Moov), ou virement bancaire selon accord. Les modalités exactes sont confirmées par téléphone/WhatsApp avec l'équipe. Aucun règlement n'est demandé en ligne sans confirmation.",
+  },
+{
+    id: 'retour-echange',
+    keywords: ['retour', 'renvoyer', 'echange', 'remboursement', 'annuler ma commande', 'pas satisfait', 'produit ne convient pas', 'mauvais produit', 'erreur de produit', 'conditions de retour'],
+    content:
+      "RETOUR ET ÉCHANGE : En cas de produit non conforme, endommagé à la réception ou erreur de commande, le client doit contacter l'équipe sous 48-72h après réception via /contact ou WhatsApp avec son numéro de commande et une photo si nécessaire. L'équipe évalue le cas et organise l'échange ou la solution adaptée selon les conditions de vente. Pour toute demande, redirige vers le service client ; ne fais pas de promesse de remboursement sans validation de l'équipe.",
+  },
+  {
+    id: 'garantie',
+    keywords: ['garantie', 'duree garantie', 'couvert par la garantie', 'produit defectueux sous garantie', 'sav garantie', 'garantie constructeur', 'echange sous garantie', 'panne garantie'],
+    content:
+      "GARANTIE : Les produits distribués par GUESS ENERGY bénéficient de la garantie du constructeur/fabricant, dont la durée varie selon la référence (matériel électrique, solaire, groupes électrogènes…). En cas de panne sous garantie, le client contacte l'équipe via /contact ou WhatsApp avec sa facture pour bénéficier du SAV. Ne promets jamais une durée de garantie précise : renvoie vers l'équipe pour vérifier selon le produit.",
+  },
+  {
+    id: 'b2b-pro',
+    keywords: ['installateur', 'electricien pro', 'grossiste', 'revendeur', 'entreprise', 'partenariat', 'travaille avec', 'devis pro', 'achat en gros', 'quantite', 'prix grossiste', 'professionnel', 'b2b', 'collectivite'],
+    content:
+      "PROFESSIONNELS & GROS : GUESS ENERGY travaille avec les installateurs, électriciens, entreprises, collectivités et chantiers de toute envergure. Pour une demande professionnelle (multiproduits, quantités, prix de gros, devis chantier), invite l'utilisateur à passer par /devis en précisant son statut professionnel et ses volumes. L'équipe commerciale propose des conditions adaptées et un accompagnement technique (bureau d'études, logistique).",
+  },
+  {
+    id: 'conseils-economie-energie',
+    keywords: ['economie energie', 'economiser', 'facture elevee', 'consommation', 'led economie', 'ampoule economique', 'reduire consommation', 'conseil energie', 'astuce', 'detecteur economie', 'gestion energie'],
+    content:
+      "CONSEILS D'ÉCONOMIE D'ÉNERGIE : Recommande des astuces simples et sûres : privilégier l'éclairage LED (jusqu'à 80-90% d'économie vs incandescent), couper les veilles, utiliser des détecteurs de présence dans les couloirs, dimensionner correctement chaque circuit (un câble sous-calibré surchauffe et consomme), entretenir les appareils. Pour un audit ou des solutions de gestion d'énergie, redirige vers le bureau d'études via /devis.",
+  },
+  {
+    id: 'entretien',
+    keywords: ['entretenir', 'entretien', 'nettoyer panneau', 'nettoyage', 'duree de vie', 'maintenance groupe', 'changer huile', 'entretien batterie', 'niveau deau batterie', 'maintenance solaire', 'panneau poussiere'],
+    content:
+      "ENTRETIEN : Donne des conseils généraux d'entretien : panneaux solaires (nettoyage doux régulier à l'eau claire, surtout en saison sèche), batteries (respecter les niveaux et le type : LiFePO4 sans entretien, plomb à vérifier, éviter les décharges profondes), groupes électrogènes (vidange et surveillance du niveau d'huile, faire tourner régulièrement quelques minutes). Pour la maintenance spécialisée, redirige vers le SAV via /contact.",
+  },
+  {
+    id: 'comparaisons',
+    keywords: ['c est mieux', 'lequel est mieux', 'difference entre', 'comparer', 'comparaison', 'led ou halogene', 'halogene', 'hybride ou string', 'lithium ou gel', 'monocristallin ou polycristallin', 'essence ou diesel', 'avantages et inconvenients'],
+    content:
+      "COMPARAISONS : Donne des bases de comparaison honnêtes et simples : LED vs halogène (durabilité et consommation), lithium LiFePO4 vs gel/AGM (durée de vie et coût), panneaux monocristallins vs polycristallins (rendement et espace), groupes essence vs diesel (usage ponctuel/intensif), onduleurs hybrides vs string (autonomie et batteries). Ne donne pas de chiffres précis non sourcés : pour une recommandation définitive, renvoie vers /devis.",
+  },
 ];
 /**
  * Retourne le bloc de connaissances à injecter dans le prompt système :
