@@ -36,6 +36,12 @@ function buildSystemPrompt(products: Array<{ id: number; nom: string; reference:
     (shop.address || shop.city) ? `Adresse : ${[shop.address, shop.city].filter(Boolean).join(', ')}` : null,
   ].filter(Boolean).map((l) => `- ${l}.`).join('\n');
 
+  // WhatsApp dérivé du téléphone de la table Boutiques (format international : 225 + numéro sans le 0)
+  const waDigits = (shop.phone ?? '').replace(/\D/g, '');
+  const waLine = waDigits.length >= 8
+    ? `- WhatsApp : +${waDigits.startsWith('0') ? `225 ${waDigits.slice(1)}` : waDigits}.`
+    : null;
+
   const knowledge = getRelevantKnowledge(query);
 
   return [
@@ -46,17 +52,18 @@ function buildSystemPrompt(products: Array<{ id: number; nom: string; reference:
     "BASE DE CONNAISSANCES (utilise ces informations pour repondre, elles font foi) :",
     knowledge,
     "",
-    "COORDONNEES ACTUELLES (prioritaires sur la base de connaissances si differentes) :",
+    "COORDONNEES ACTUELLES (source : table Boutiques de la base de donnees, prioritaires sur la base de connaissances si differentes) :",
     contactLines,
-    "- WhatsApp : +225 07 00 00 00 00.",
+    waLine,
     "",
     productContext,
     "REGLE CRITIQUE :",
+    "- Si une coordonnee (telephone, email, adresse, WhatsApp) n'apparait PAS dans la liste ci-dessus, ne l'invente JAMAIS : redirige simplement le client vers la page /contact.",
     "- Si le produit demande n'est pas dans le catalogue ci-dessus, ne JAMAIS inventer de prix ni de reference. Reponds honnetement que le produit n'est pas encore reference et propose un devis personnalise via /devis.",
     "- Les prix sont TOUJOURS en FCFA TTC.",
     "- Tu ne peux pas traiter les commandes directement dans le chat : redirige vers /devis ou /contact.",
   ]
-    .filter((l) => l !== '')
+    .filter((l) => l !== null && l !== '')
     .join('\n')
     .trim();
 }

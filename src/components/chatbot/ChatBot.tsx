@@ -21,7 +21,18 @@ const QUICK_REPLIES = [
   'Paiement',
 ];
 
-function buildFallbackText(query: string): { text: string; rawOptions?: string[] } {
+function buildFallbackText(query: string, shop?: { phone?: string | null; email?: string | null; address?: string | null; city?: string | null } | null): { text: string; rawOptions?: string[] } {
+  const phone = shop?.phone ?? '';
+  const email = shop?.email ?? '';
+  const address = [shop?.address, shop?.city].filter(Boolean).join(', ');
+  const contactText = [
+    'Vous pouvez nous contacter par :',
+    '',
+    phone ? `Téléphone : ${phone}` : null,
+    email ? `Email : ${email}` : null,
+    address ? `Adresse : ${address}` : null,
+    phone ? 'WhatsApp : Disponible 24h/24' : null,
+  ].filter(Boolean).join('\n');
   const lower = query.toLowerCase().trim();
   const map: Record<string, { text: string; rawOptions?: string[] }> = {
     'nos produits': {
@@ -37,7 +48,7 @@ function buildFallbackText(query: string): { text: string; rawOptions?: string[]
       rawOptions: ['Nous contacter', 'Nos produits', 'Demander un devis'],
     },
     'nous contacter': {
-      text: "Vous pouvez nous contacter par :\n\nTéléphone : +225 07 00 00 00 00\nEmail : contact@guess-energy.ci\nAdresse : Abidjan, Côte d'Ivoire\nWhatsApp : Disponible 24h/24",
+      text: contactText,
       rawOptions: ['Demander un devis', 'Nos produits', "Horaires d'ouverture"],
     },
     'livraison': {
@@ -89,7 +100,7 @@ function buildFallbackText(query: string): { text: string; rawOptions?: string[]
 
   return map.default;
 }
-export function ChatBot() {
+export function ChatBot({ shop }: { shop?: { phone?: string | null; email?: string | null; address?: string | null; city?: string | null } | null }) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -158,7 +169,7 @@ export function ChatBot() {
       fullText += decoder.decode();
 
       if (!fullText.trim()) {
-        const fb = buildFallbackText(userText);
+        const fb = buildFallbackText(userText, shop);
         setMessages((prev) =>
           prev.map((m) =>
             m.id === botId ? { ...m, text: fb.text, rawOptions: fb.rawOptions } : m,
@@ -166,7 +177,7 @@ export function ChatBot() {
         );
       }
     } catch {
-      const fb = buildFallbackText(userText);
+      const fb = buildFallbackText(userText, shop);
       setMessages((prev) =>
         prev.map((m) =>
           m.id === botId ? { ...m, text: fb.text, rawOptions: fb.rawOptions } : m,
@@ -176,7 +187,7 @@ export function ChatBot() {
       setIsTyping(false);
       busyRef.current = false;
     }
-  }, [messages]);
+  }, [messages, shop]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
