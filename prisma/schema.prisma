@@ -1,0 +1,271 @@
+// ============================================================
+// GUES ENERGY + SARL — Schéma Prisma (base unifiée db56327)
+// Lecture seule des tables métier GesCom — écriture uniquement
+// sur Web_Devis / Web_Contact (tables additives du site).
+// Relations : onDelete/onUpdate NoAction comme le schéma GesCom.
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Tenants {
+  id_tenant           Int       @id @default(autoincrement())
+  nom_entreprise      String    @unique @db.VarChar(150)
+  email_contact       String    @db.VarChar(100)
+  telephone_contact   String?   @db.VarChar(20)
+  adresse_facturation String?   @db.NVarChar(MAX)
+  devise              String?   @db.VarChar(3)
+  is_deleted          Boolean?  @default(false)
+  Boutiques           Boutiques[]
+  Produits            Produits[]
+
+  @@map("Tenants")
+}
+
+model Boutiques {
+  id_boutique      Int       @id @default(autoincrement())
+  id_tenant        Int
+  nom              String    @db.NVarChar(100)
+  secteur_activite String?   @db.NVarChar(100)
+  adresse          String?   @db.NVarChar(255)
+  ville            String?   @db.NVarChar(100)
+  telephone        String?   @db.NVarChar(50)
+  email            String?   @db.NVarChar(100)
+  est_active       Boolean   @default(true)
+  is_deleted       Boolean?  @default(false)
+  Tenants          Tenants     @relation(fields: [id_tenant], references: [id_tenant], onDelete: NoAction, onUpdate: NoAction)
+  Categories       Categories[]
+  Produits         Produits[]
+  Commandes        Commandes[]
+  Clients          Clients[]
+
+  @@map("Boutiques")
+}
+
+model Categories {
+  id_categorie  Int        @id @default(autoincrement())
+  id_tenant     Int
+  id_boutique   Int?
+  nom_categorie String     @db.VarChar(100)
+  is_deleted    Boolean?   @default(false)
+  Boutiques     Boutiques?  @relation(fields: [id_boutique], references: [id_boutique], onDelete: NoAction, onUpdate: NoAction)
+  Produits      Produits[]
+
+  @@index([id_tenant, nom_categorie])
+  @@map("Categories")
+}
+
+model Produits {
+  id_produit               Int       @id @default(autoincrement())
+  id_tenant                Int
+  id_boutique              Int?
+  id_categorie             Int?
+  id_fournisseur           Int?
+  nom_produit              String    @db.VarChar(150)
+  image_product            Bytes?
+  code_barres_ean13        String?   @db.VarChar(13)
+  reference_interne        String?   @db.VarChar(50)
+  unite_mesure             String?   @db.VarChar(20)
+  emplacement_magasin      String?   @db.VarChar(50)
+  stock_actuel             Decimal?  @db.Decimal(10, 3)
+  stock_alerte             Decimal?  @db.Decimal(10, 3)
+  prix_achat_moyen_pondere Decimal?  @db.Decimal(10, 2)
+  prix_unitaire_vente_ht   Decimal   @db.Decimal(10, 2)
+  caracteristiques         String?   @db.NVarChar(MAX)
+  description              String?   @db.NVarChar(MAX)
+  status                   String    @db.NVarChar(20)
+  external_id              String?   @db.NVarChar(100)
+  created_at               DateTime? @default(now())
+  updated_at               DateTime?
+  is_deleted               Boolean?  @default(false)
+  Categories               Categories? @relation(fields: [id_categorie], references: [id_categorie], onDelete: NoAction, onUpdate: NoAction)
+  Boutiques                Boutiques?  @relation(fields: [id_boutique], references: [id_boutique], onDelete: NoAction, onUpdate: NoAction)
+  Tenants                  Tenants     @relation(fields: [id_tenant], references: [id_tenant], onDelete: NoAction, onUpdate: NoAction)
+  Details_Commandes        Details_Commandes[]
+  Mouvements_Stock         Mouvements_Stock[]
+  Articles_Panier          Articles_Panier[]
+
+  @@index([id_tenant, id_boutique])
+  @@index([id_tenant, code_barres_ean13])
+  @@map("Produits")
+}
+model Clients {
+  id_client               Int        @id @default(autoincrement())
+  id_tenant               Int
+  id_boutique             Int?
+  type_client             String?    @db.VarChar(20)
+  nom_raison_sociale      String     @db.VarChar(150)
+  numero_tva_intracom     String?    @db.VarChar(50)
+  siret_registre_commerce String?    @db.VarChar(50)
+  email                   String?    @db.VarChar(100)
+  telephone               String?    @db.VarChar(20)
+  adresse_facturation     String?    @db.NVarChar(MAX)
+  adresse_livraison       String?    @db.NVarChar(MAX)
+  date_inscription        DateTime?  @db.Date
+  is_deleted              Boolean?   @default(false)
+  Boutiques               Boutiques? @relation(fields: [id_boutique], references: [id_boutique], onDelete: NoAction, onUpdate: NoAction)
+  Commandes               Commandes[]
+
+  @@map("Clients")
+}
+
+model Commandes {
+  id_commande                Int        @id @default(autoincrement())
+  id_tenant                  Int
+  id_boutique                Int?
+  id_client                  Int
+  id_vendeur                 Int?
+  numero_facture_chrono      String?    @db.VarChar(50)
+  taux_tva_applicable        Decimal?   @db.Decimal(5, 2)
+  remise_globale_pourcent    Decimal?   @db.Decimal(5, 2)
+  statut                     String?    @db.VarChar(50)
+  date_commande              DateTime?  @default(now())
+  date_derniere_modification DateTime?  @default(now())
+  is_deleted                 Boolean?   @default(false)
+  Boutiques                  Boutiques? @relation(fields: [id_boutique], references: [id_boutique], onDelete: NoAction, onUpdate: NoAction)
+  Clients                    Clients    @relation(fields: [id_client], references: [id_client], onDelete: NoAction, onUpdate: NoAction)
+  Details_Commandes          Details_Commandes[]
+  Evenements_Suivi           Evenements_Suivi[]
+  Acomptes                   Acomptes[]
+
+  @@index([id_tenant, date_commande, statut])
+  @@map("Commandes")
+}
+
+model Details_Commandes {
+  id_detail   Int        @id @default(autoincrement())
+  id_tenant   Int
+  id_boutique Int?
+  id_commande Int
+  id_produit  Int
+  quantite    Decimal    @db.Decimal(10, 3)
+  prix_vente  Decimal    @db.Decimal(10, 2)
+  is_deleted  Boolean?   @default(false)
+  Commandes   Commandes  @relation(fields: [id_commande], references: [id_commande], onDelete: NoAction, onUpdate: NoAction)
+  Produits    Produits   @relation(fields: [id_produit], references: [id_produit], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([id_commande])
+  @@map("Details_Commandes")
+}
+
+model Mouvements_Stock {
+  id_mouvement   Int       @id @default(autoincrement())
+  id_tenant      Int
+  id_boutique    Int?
+  id_produit     Int
+  type_mouvement String    @db.VarChar(20)
+  quantite       Decimal   @db.Decimal(10, 3)
+  date_mouvement DateTime? @default(now())
+  commentaire    String?   @db.NVarChar(MAX)
+  is_deleted     Boolean?  @default(false)
+  Produits       Produits  @relation(fields: [id_produit], references: [id_produit], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("Mouvements_Stock")
+}
+
+model Evenements_Suivi {
+  id_evenement   Int        @id @default(autoincrement())
+  id_tenant      Int
+  id_boutique    Int?
+  id_commande    Int
+  statut         String     @db.NVarChar(50)
+  libelle        String     @db.NVarChar(100)
+  description    String?    @db.NVarChar(255)
+  numero_suivi   String?    @db.NVarChar(100)
+  transporteur   String?    @db.NVarChar(100)
+  date_evenement DateTime   @default(now())
+  Commandes      Commandes  @relation(fields: [id_commande], references: [id_commande], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("Evenements_Suivi")
+}
+model Acomptes {
+  id_acompte      Int        @id @default(autoincrement())
+  id_tenant       Int
+  id_boutique     Int?
+  id_commande     Int
+  montant         Decimal    @db.Decimal(10, 2)
+  date_versement  DateTime?  @default(now())
+  mode_paiement   String     @db.VarChar(50)
+  statut_paiement String?    @default("Validé") @db.VarChar(50)
+  commentaire     String?    @db.VarChar(255)
+  is_deleted      Boolean?   @default(false)
+  Commandes       Commandes  @relation(fields: [id_commande], references: [id_commande], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("Acomptes")
+}
+
+model Paniers {
+  id_panier       Int               @id @default(autoincrement())
+  id_tenant       Int
+  id_boutique     Int?
+  id_client       Int?
+  session_id      String?           @db.NVarChar(100)
+  created_at      DateTime          @default(now())
+  updated_at      DateTime?
+  Articles_Panier Articles_Panier[]
+
+  @@map("Paniers")
+}
+
+model Articles_Panier {
+  id_article_panier Int      @id @default(autoincrement())
+  id_tenant         Int
+  id_boutique       Int?
+  id_panier         Int
+  id_produit        Int
+  quantite          Int      @default(1)
+  prix_unitaire     Decimal  @db.Decimal(18, 2)
+  created_at        DateTime @default(now())
+  Paniers           Paniers  @relation(fields: [id_panier], references: [id_panier], onDelete: NoAction, onUpdate: NoAction)
+  Produits          Produits @relation(fields: [id_produit], references: [id_produit], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("Articles_Panier")
+}
+
+model Parametres_Boutique {
+  id_parametre    Int      @id @default(autoincrement())
+  id_tenant       Int
+  id_boutique     Int?
+  taux_tva_defaut Decimal  @db.Decimal(18, 2)
+  monnaie_defaut  String   @db.NVarChar(10)
+  is_deleted      Boolean  @default(false)
+
+  @@map("Parametres_Boutique")
+}
+
+model Web_Devis {
+  id_devis    Int      @id @default(autoincrement())
+  reference   String   @unique @db.NVarChar(50)
+  id_tenant   Int
+  id_boutique Int?
+  nom         String   @db.NVarChar(150)
+  telephone   String   @db.VarChar(50)
+  email       String   @db.NVarChar(150)
+  entreprise  String?  @db.NVarChar(150)
+  commentaire String?  @db.NVarChar(MAX)
+  statut      String   @default("NOUVEAU") @db.NVarChar(30)
+  items_json  String?  @db.NVarChar(MAX)
+  created_at  DateTime @default(now())
+
+  @@map("Web_Devis")
+}
+
+model Web_Contact {
+  id_message  Int      @id @default(autoincrement())
+  id_tenant   Int
+  id_boutique Int?
+  nom         String   @db.NVarChar(150)
+  email       String   @db.NVarChar(150)
+  telephone   String?  @db.VarChar(50)
+  sujet       String   @db.NVarChar(100)
+  message     String   @db.NVarChar(MAX)
+  created_at  DateTime @default(now())
+
+  @@map("Web_Contact")
+}

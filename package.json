@@ -1,0 +1,46 @@
+{
+  "name": "guess-energy-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site professionnel officiel de GUESS ENERGY + SARL — matériel électrique.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:generate": "prisma generate",
+    "db:create-web-tables": "prisma db execute --file ./sql/web_tables.sql",
+    "db:check": "tsx scripts/check-db.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:concurrency": "cross-env RUN_CONCURRENCY_TESTS=1 vitest run tests/integration",
+    "preview": "next dev"
+  },
+  "dependencies": {
+    "@ai-sdk/groq": "^4.0.38",
+    "@prisma/client": "^6.19.3",
+    "ai": "^7.0.94",
+    "jose": "^6.0.11",
+    "lucide-react": "^0.468.0",
+    "next": "^15.5.23",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "cross-env": "^7.0.3",
+    "prisma": "^6.19.3",
+    "tsx": "^4.20.5",
+    "typescript": "^5.7.2",
+    "vitest": "^3.2.4"
+  },
+  "allowScripts": {
+    "prisma@6.19.3": true,
+    "@prisma/client@6.19.3": true,
+    "@prisma/engines@6.19.3": true,
+    "esbuild@0.28.2": true
+  }
+}

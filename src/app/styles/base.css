@@ -1,0 +1,43 @@
+/* GUESS ENERGY + SARL — Base & boutons */
+:root {
+  --navy-950: #060f1f; --navy-900: #0a1a33; --navy-800: #10264a; --navy-700: #173563;
+  --electric-600: #0a58d4; --electric-500: #1668e8; --electric-100: #dbe9ff;
+  --gold-600: #b8901f; --gold-500: #d4af37; --gold-100: #faf3d9;
+  --green-600: #0e9e6a; --green-500: #10b981;
+  --ink: #0e1622; --muted: #5b6b7e; --line: #e4e9f0; --paper: #fff; --bg-soft: #f6f8fb;
+  --radius: 14px; --radius-lg: 22px;
+  --shadow-sm: 0 1px 2px rgba(6,15,31,.06), 0 2px 8px rgba(6,15,31,.05);
+  --shadow-md: 0 6px 24px rgba(6,15,31,.10);
+  --shadow-lg: 0 16px 48px rgba(6,15,31,.16);
+  --font: 'Manrope', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font); color: var(--ink); background: var(--paper); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; cursor: pointer; border: 0; background: none; }
+input, select, textarea { font: inherit; color: inherit; }
+.container { width: min(1200px, 100% - 40px); margin-inline: auto; }
+@media (max-width: 640px) { .container { width: calc(100% - 32px); } }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 46px; padding: 0 22px; border-radius: 999px; font-weight: 700; font-size: 14px; transition: transform .15s, box-shadow .15s, background .15s; white-space: nowrap; }
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--electric-600); color: #fff; box-shadow: 0 6px 18px rgba(10,88,212,.35); }
+.btn-primary:hover { background: #0d4fbd; }
+.btn-gold { background: linear-gradient(135deg, var(--gold-500), var(--gold-600)); color: #221a02; box-shadow: 0 6px 18px rgba(212,175,55,.4); }
+.btn-gold:hover { filter: brightness(1.05); }
+.btn-outline { border: 1.5px solid var(--line); color: var(--ink); background: #fff; }
+.btn-outline:hover { border-color: var(--electric-500); color: var(--electric-600); }
+.btn-light { background: #fff; color: var(--navy-900); }
+.btn-ghost-light { border: 1.5px solid rgba(255,255,255,.4); color: #fff; }
+.btn-ghost-light:hover { background: rgba(255,255,255,.12); }
+.btn-sm { height: 38px; padding: 0 16px; font-size: 13px; }
+.btn-lg { height: 52px; padding: 0 30px; font-size: 15px; }
+.btn[disabled], .btn.is-disabled { opacity: .55; cursor: not-allowed; box-shadow: none; }
+
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 11px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.badge-in { background: #e8f8f1; color: var(--green-600); }
+.badge-out { background: #fdeeee; color: #c0392b; }
+.badge-low { background: var(--gold-100); color: var(--gold-600); }
+.badge-navy { background: var(--electric-100); color: var(--electric-600); }

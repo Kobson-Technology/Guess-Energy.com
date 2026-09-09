@@ -1,0 +1,261 @@
+﻿'use client';
+
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { MessageCircle, X, Send, Bot, User } from 'lucide-react';
+
+interface Message {
+  id: string;
+  text: string;
+  sender: 'user' | 'bot';
+  timestamp: number;
+  rawOptions?: string[];
+}
+
+const QUICK_REPLIES = [
+  'Nos produits',
+  'Demander un devis',
+  "Horaires d'ouverture",
+  'Nous contacter',
+  'Livraison',
+];
+
+function buildFallbackText(query: string): { text: string; rawOptions?: string[] } {
+  const lower = query.toLowerCase().trim();
+  const map: Record<string, { text: string; rawOptions?: string[] }> = {
+    'nos produits': {
+      text: "Nous proposons une large gamme de matériel électrique : câbles, disjoncteurs, tableaux, éclairage LED, groupes électrogènes, panneaux solaires et bien plus. Visitez notre catalogue pour découvrir tous nos produits !",
+      rawOptions: ['Voir le catalogue', 'Demander un devis', 'Nous contacter'],
+    },
+    'demander un devis': {
+      text: "Pour demander un devis, ajoutez simplement les produits souhaités à votre panier puis rendez-vous sur la page Demander un devis. Remplissez vos coordonnées et notre équipe vous répondra sous 24h !",
+      rawOptions: ['Aller au devis', 'Nos produits', 'Nous contacter'],
+    },
+    "horaires d'ouverture": {
+      text: "Nous sommes ouverts du Lundi au Samedi de 08h00 à 18h00. Le dimanche nous sommes fermés. N'hésitez pas à nous contacter par WhatsApp en dehors de ces heures !",
+      rawOptions: ['Nous contacter', 'Nos produits', 'Demander un devis'],
+    },
+    'nous contacter': {
+      text: "Vous pouvez nous contacter par :\n\nTéléphone : +225 07 00 00 00 00\nEmail : contact@guess-energy.ci\nAdresse : Abidjan, Côte d'Ivoire\nWhatsApp : Disponible 24h/24",
+      rawOptions: ['Demander un devis', 'Nos produits', "Horaires d'ouverture"],
+    },
+    'livraison': {
+      text: "Nous livrons dans toute la Côte d'Ivoire ! La livraison est GRATUITE à partir de 100 000 FCFA d'achat. En dessous, les frais de livraison sont de 5 000 FCFA. Le délai de livraison est de 24 à 72h selon votre localité.",
+      rawOptions: ['Nos produits', 'Demander un devis', 'Nous contacter'],
+    },
+    'voir le catalogue': {
+      text: "Notre catalogue est disponible en ligne ! Vous pouvez parcourir nos catégories, voir les prix et disponibilités en temps réel.",
+      rawOptions: ['Voir le catalogue', 'Demander un devis', 'Nous contacter'],
+    },
+    'aller au devis': {
+      text: "Parfait ! Cliquez sur le lien Demander un devis dans le menu, ou accédez directement à notre page devis. Ajoutez des produits à votre panier pour commencer !",
+      rawOptions: ['Nos produits', 'Nous contacter', "Horaires d'ouverture"],
+    },
+    default: {
+      text: "Merci pour votre message ! Je suis l'assistant virtuel de GUESS ENERGY. Comment puis-je vous aider aujourd'hui ?",
+      rawOptions: ['Nos produits', 'Demander un devis', 'Nous contacter', 'Livraison'],
+    },
+  };
+
+  for (const [key, val] of Object.entries(map)) {
+    if (key !== 'default' && lower.includes(key)) return val;
+  }
+  if (lower.includes('produit') || lower.includes('catalogue') || lower.includes('acheter')) return map['nos produits'];
+  if (lower.includes('devis') || lower.includes('prix') || lower.includes('coût')) return map['demander un devis'];
+  if (lower.includes('horaire') || lower.includes('ouvert') || lower.includes('heure')) return map["horaires d'ouverture"];
+  if (lower.includes('contact') || lower.includes('téléphone') || lower.includes('email') || lower.includes('adresse')) return map['nous contacter'];
+  if (lower.includes('livraison') || lower.includes('expédition') || lower.includes('délai')) return map['livraison'];
+
+  return map.default;
+}
+export function ChatBot() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: 'welcome',
+      text: "Bonjour ! ☀️ Je suis l'assistant virtuel de GUESS ENERGY. Comment puis-je vous aider aujourd'hui ?",
+      sender: 'bot' as const,
+      timestamp: Date.now(),
+      rawOptions: [...QUICK_REPLIES],
+    },
+  ]);
+  const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const busyRef = useRef(false);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  useEffect(() => {
+    if (isOpen && inputRef.current) inputRef.current.focus();
+  }, [isOpen]);
+
+  const sendMessage = useCallback(async (text: string) => {
+    const userText = text.trim();
+    if (!userText || busyRef.current) return;
+    busyRef.current = true;
+
+    const botId = `bot-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    setMessages((prev) => [
+      ...prev,
+      { id: `user-${Date.now()}`, text: userText, sender: 'user' as const, timestamp: Date.now() },
+      { id: botId, text: '', sender: 'bot' as const, timestamp: Date.now() },
+    ]);
+    setInput('');
+    setIsTyping(true);
+
+    // Historique limité aux 10 derniers messages (limites tokens Groq)
+    const history = messages
+      .filter((m) => m.text)
+      .slice(-10)
+      .map((m) => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.text }));
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history }),
+      });
+      if (!res.ok || !res.body) throw new Error('chat-fail');
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        fullText += decoder.decode(value, { stream: true });
+        setMessages((prev) =>
+          prev.map((m) => (m.id === botId ? { ...m, text: fullText } : m)),
+        );
+      }
+      // Décode le tampon final restant éventuel
+      fullText += decoder.decode();
+
+      if (!fullText.trim()) {
+        const fb = buildFallbackText(userText);
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === botId ? { ...m, text: fb.text, rawOptions: fb.rawOptions } : m,
+          ),
+        );
+      }
+    } catch {
+      const fb = buildFallbackText(userText);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === botId ? { ...m, text: fb.text, rawOptions: fb.rawOptions } : m,
+        ),
+      );
+    } finally {
+      setIsTyping(false);
+      busyRef.current = false;
+    }
+  }, [messages]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    sendMessage(input);
+  };
+
+  return (
+    <>
+      {/* Bouton flottant du chat */}
+      <button
+        className={`chatbot-button ${isOpen ? 'active' : ''}`}
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? 'Fermer le chat' : 'Ouvrir le chat'}
+      >
+        {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
+        {!isOpen && <span className="chatbot-pulse" />}
+      </button>
+
+      {/* Fenêtre de chat */}
+      <div className={`chatbot-window ${isOpen ? 'open' : ''}`}>
+        {/* Header */}
+        <div className="chatbot-header">
+          <div className="chatbot-header-info">
+            <div className="chatbot-avatar">
+              <Bot size={20} />
+            </div>
+            <div>
+              <h4>GUESS ENERGY</h4>
+              <span className="chatbot-status">
+                <span className="chatbot-status-dot" /> En ligne
+              </span>
+            </div>
+          </div>
+          <button className="chatbot-close" onClick={() => setIsOpen(false)}>
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Messages */}
+        <div className="chatbot-messages">
+          {messages.map((message) => (
+            <div key={message.id} className={`chatbot-message ${message.sender}`}>
+              <div className="chatbot-message-avatar">
+                {message.sender === 'user' ? <User size={16} /> : <Bot size={16} />}
+              </div>
+              <div className="chatbot-message-content">
+                <div className="chatbot-message-text">{message.text}</div>
+                {message.rawOptions && message.rawOptions.length > 0 && (
+                  <div className="chatbot-options">
+                    {message.rawOptions.map((option) => (
+                      <button
+                        key={option}
+                        className="chatbot-option"
+                        onClick={() => sendMessage(option)}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <span className="chatbot-message-time">
+                  {new Date(message.timestamp).toLocaleTimeString('fr-FR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
+              </div>
+            </div>
+          ))}
+          {isTyping && (
+            <div className="chatbot-message bot">
+              <div className="chatbot-message-avatar">
+                <Bot size={16} />
+              </div>
+              <div className="chatbot-message-content">
+                <div className="chatbot-typing">
+                  <span />
+                  <span />
+                  <span />
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input */}
+        <form className="chatbot-input" onSubmit={handleSubmit}>
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Tapez votre message..."
+            disabled={isTyping}
+          />
+          <button type="submit" disabled={!input.trim() || isTyping}>
+            <Send size={18} />
+          </button>
+        </form>
+      </div>
+    </>
+  );
+}
