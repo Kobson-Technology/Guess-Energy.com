@@ -2,8 +2,9 @@ import Link from 'next/link';
 import { HelpCircle, MessageCircle } from 'lucide-react';
 
 export const metadata = {
-  title: 'FAQ — GUESS ENERGY + SARL',
+  title: 'FAQ — Questions fréquentes',
   description: 'Questions fréquentes sur les produits, commandes, devis et livraisons de GUESS ENERGY.',
+  alternates: { canonical: '/faq' },
 };
 
 const FAQ = [
@@ -17,9 +18,21 @@ const FAQ = [
   ['Puis-je modifier ma commande après envoi ?', 'Contactez notre équipe par téléphone ou WhatsApp avec votre numéro de commande pour toute modification.'],
 ];
 
+// Données structurées FAQPage : extraits enrichis dans les résultats Google
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ.map(([q, a]) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+};
+
 export default function FaqPage() {
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <section className="page-hero">
         <div className="container">
           <div className="breadcrumbs">
