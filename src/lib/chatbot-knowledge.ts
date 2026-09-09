@@ -447,6 +447,169 @@ export const KNOWLEDGE_ENTRIES: KnowledgeEntry[] = [
     content:
       "COMPARAISONS : Donne des bases de comparaison honnêtes et simples : LED vs halogène (durabilité et consommation), lithium LiFePO4 vs gel/AGM (durée de vie et coût), panneaux monocristallins vs polycristallins (rendement et espace), groupes essence vs diesel (usage ponctuel/intensif), onduleurs hybrides vs string (autonomie et batteries). Ne donne pas de chiffres précis non sourcés : pour une recommandation définitive, renvoie vers /devis.",
   },
+{
+    id: 'qualifier-solaire',
+    keywords: ['je veux du solaire', 'projet solaire', 'installation solaire', 'je veux alimenter', 'kit solaire', 'solde au soleil'],
+    content:
+      "QUALIFICATION SOLAIRE (multi-tours) : Quand l'utilisateur parle d'un projet solaire sans précision, qualifie-le étape par étape en posant une question à la fois : 1) Quel est l'usage ? (maison, boutique, pharmacie, bureau) 2) Quels appareils à alimenter et combien d'heures par jour ? 3) La localisation (zone d'ensoleillement, ville). 4) Budget indicatif. Résume ensuite les besoins et oriente vers /devis pour un dimensionnement précis par le bureau d'études. Ne donne pas de dimensionnement définitif sans ces informations.",
+  },
+  {
+    id: 'qualifier-groupe',
+    keywords: ['je veux un groupe', 'projet groupe electrogene', 'je cherche un groupe', 'achat groupe', 'besoin de secours', 'groupe pour secours'],
+    content:
+      "QUALIFICATION GROUPE ÉLECTROGÈNE (multi-tours) : Quand l'utilisateur veut un groupe sans précision, qualifie-le : 1) Usage ? (secours ponctuel, alimentation principale, chantier) 2) Quels appareils à faire tourner en même temps ? 3) Combien d'heures par jour/semaine ? 4) Carburant préféré (essence, diesel, gaz) ? 5) Besoin de démarrage automatique (ATS) ou manuel ? Résume et oriente vers /devis. Propose des ordres de grandeur en kVA uniquement de façon indicative.",
+  },
+  {
+    id: 'refus-information',
+    always: true,
+    keywords: ['peu importe', 'n importe quoi', 'je sais pas', 'je ne sais pas', 'choisis pour moi', 'fais au mieux', 'tu decides', 'nimporte lequel', 'pas besoin de details'],
+    content:
+      "REFUS D'INFORMATION : Si l'utilisateur dit 'peu importe', 'je ne sais pas', 'choisis pour moi' ou refuse de donner des détails techniques, ne le force pas à compléter. Propose des choix par défaut raisonnables et des exemples de configurations courantes (ex : solaire résidentiel de base : onduleur hybride 3-5 kW + 2-4 panneaux + batterie LiFePO4 ; groupe secours domestique ~3-5 kVA essence). Rappelle toujours qu'une étude sur /devis est possible pour affiner gratuitement.",
+  },
+  {
+    id: 'questions-en-cascade',
+    keywords: ['quelle marque', 'magasin de votre choix', 'je prefere une marque', 'quelle est la marque', 'quelles marques'],
+    content:
+      "QUESTIONS EN CASCADE : Quand l'utilisateur demande une marque ou une spécificité, réponds honnêtement en expliquant que le catalogue référence plusieurs marques fiables selon les lignes de produits, et que les références exactes disponibles sont consultables sur /produits. Ne liste pas des marques inventées : si la liste réelle n'est pas connue, oriente vers le catalogue ou le devis. Propose de filtrer par critère (marque, prix, usage) en redirigeant vers le site.",
+  },
+  {
+    id: 'besoin-frigo',
+    keywords: ['frigo', 'refrigerateur', 'congelateur', 'chambre froide', 'vitrine froide', 'preserver aliments', 'pharmacie froid', 'stockage medicament', 'vaccin', 'refresh'],
+    content:
+      "BESOIN EN FROID : Le froid (frigo, congélateur, chambre froide, pharmacie) est sensible car ces appareils tournent de nuit ET de jour et ont un pic au démarrage du compresseur. Pour du solaire ou un groupe, il faut prévoir une marge confortable. Recommande un dimensionnement soigné via /devis en précisant le type d'appareil (frigo, congélateur, vitrine, chambre froide) et sa capacité (litres). Pour le médical (vaccins), insiste sur la fiabilité et le secours : redirige vers le bureau d'études pour une solution sécurisée.",
+  },
+  {
+    id: 'perte-courant-chronique',
+    keywords: ['delestage', 'coupure frequente', 'coupures repetees', 'il n y a pas de courant', 'pas de courant souvent', 'pannes recurrente', 'on nous coupe le courant', 'societe de distribution', 'coupures'],
+    content:
+      "DÉLESTAGE / COUPURES FRÉQUENTES : Reconnais le contexte ivoirien (délestages, coupures). Propose des solutions adaptées : en cas de coupures courtes répétées, un groupe ou une batterie de secours/onduleur peut suffire ; si les coupures sont longues ou fréquentes, une installation solaire hybride avec batterie est pertinente. Rassure : cette situation est courante et GUESS ENERGY dimensionne spécifiquement pour elle. Oriente vers /devis en demandant la fréquence et la durée typique des coupures.",
+  },
+  {
+    id: 'devis-budget',
+    keywords: ['mon budget est', 'j ai un budget', 'quelque chose a', 'a moins de', 'dans mon budget', 'budget restreint', 'pas trop cher', 'petit budget', 'entree de gamme', 'budget limite'],
+    content:
+      "DEVIS ET BUDGET : Quand l'utilisateur donne un budget, ne propose pas immédiatement le produit le plus cher. Présente des options claires et honnêtes : une solution d'entrée de gamme fiable, une option intermédiaire, et une solution premium, en expliquant les différences (durée de vie, efficacité, coût total). Rappelle que le devis via /devis permet d'obtenir une proposition précise dans son budget. Ne promets jamais des prix exacts sans référence réelle.",
+  },
+{
+    id: 'eclairage-maison',
+    keywords: ['eclairage salon', 'eclairage chambre', 'lumiere du salon', 'lumineux', 'bien eclairer', 'lampadaire salon', 'spot plafond', 'applique murale maison', 'eclairage interieur'],
+    content:
+      "ÉCLAIRAGE INTÉRIEUR : Propose des repères utiles : l'éclairage LED est recommandé partout (économie et durée de vie). Pour une pièce, conseille de combiner un éclairage général (plafonnier, spots LED) et un éclairage d'appoint (applique, lampe). Donne des ordres d'idée en lumens de façon prudente et invite à consulter /produits pour les choix disponibles (spots, plafonniers, appliques, variateurs). Pour un calcul précis de l'éclairement d'une pièce, propose une étude via /devis.",
+  },
+  {
+    id: 'eclairage-rue-entreprise',
+    keywords: ['eclairer cour', 'eclairage parcelle', 'lampadaire exterieur', 'projecteur cour', 'eclairage parking', 'eclairage magasin', 'eclairage commerce', 'eclairage atelier', 'eclairage entrepot', 'lumiere boutique'],
+    content:
+      "ÉCLAIRAGE COMMERCIAL / COUR / PARKING : Pour une cour, un parking, un atelier, une boutique : privilégie des projecteurs LED et/ou des lanternes résistantes à l'extérieur (indices de protection IP élevés, résistance chocs IK). Si l'utilisateur veut de l'autonomie (zones sans réseau), évoque le solaire avec batterie et détection de mouvement. Propose de préciser la surface à éclairer et l'usage pour un dimensionnement via /devis.",
+  },
+  {
+    id: 'meteo-climat',
+    keywords: ['saison seche', 'saison des pluies', 'pluie', 'orage', 'foudre', 'canicule', 'chaleur', 'poussiere', 'harmattan', 'proteger des orages', 'protection foudre', 'surge'],
+    content:
+      "CLIMAT ET SAISON : Adapte les conseils au climat ivoirien : en saison des pluies, insiste sur l'étanchéité et la protection contre les infiltrations ; en cas d'orage, rappelle l'importance des parafoudres et de la mise à la terre (sur-tensions). En saison sèche (harmattan), le nettoyage des panneaux solaires est important. Les installations extérieures doivent être protégées des intempéries : oriente vers /devis pour choisir le bon indice de protection (IP).",
+  },
+  {
+    id: 'installation-neuve',
+    keywords: ['nouvelle construction', 'construction neuve', 'nouvelle maison', 'je construis', 'je bâtis', 'maison en construction', 'batiment neuf', 'immeuble neuf', 'chantier en cours'],
+    content:
+      "NOUVELLE CONSTRUCTION : Pour une construction neuve, l'idéal est d'établir le plan électrique dès le départ (emplacement des prises, interrupteurs, tableau, cheminements de câbles). GUESS ENERGY peut fournir le matériel complet (tableau, disjoncteurs, câbles, appareillage) et propose une étude via le bureau d'études. Invite l'utilisateur à décrire la surface et les pièces, et à passer par /devis ou /services pour un accompagnement sur le chantier.",
+  },
+  {
+    id: 'rehabilitation',
+    keywords: ['rehabilitation', 'renovation', 'renover', 'changer l installation', 'mettre aux normes', 'tableau trop petit', 'disjoncteur qui saute', 'prises anciennes', 'cables refaits', 'remise en etat'],
+    content:
+      "RÉHABILITATION / REMISE AUX NORMES : Si l'utilisateur veut rénover ou mettre aux normes, explique que le diagnostic est important (tableau sous-dimensionné, disjoncteurs qui sautent, câbles obsolètes ou trop petits). Recommande de faire vérifier l'état de l'installation par un professionnel et de dimensionner le nouveau matériel. Propose via /devis une liste du matériel adapté (nouveau tableau, disjoncteurs différentiels, câbles, prises). Rappelle que la sécurité prime.",
+  },
+  {
+    id: 'secours-batterie',
+    keywords: ['onduleur', 'ups', 'alimentation sans interruption', 'batterie de secours', 'sauvegarder ordinateur', 'laisser tourner modem', 'wi-fi', 'box internet', 'petit secours', 'nas', 'gros appareils'],
+    content:
+      "SECOURS POUR ÉLECTRONIQUE : Pour protéger ordinateur, routeur/box internet, télévision ou petit équipement des coupures, un onduleur (UPS) ou une batterie de secours avec convertisseur est idéal. Précise la distinction entre un simple onduleur (quelques minutes, pour éteindre proprement) et un système batterie/convertisseur (autonomie plus longue). Pour alimenter de gros appareils (frigo, clim), il faut dimensionner plus grand : oriente vers /devis.",
+  },
+  {
+    id: 'autonomie-totale',
+    keywords: ['sans reseau', 'site isole', 'pas de courant du tout', 'zone reculee', 'village sans electricite', 'campagne', 'autonome totalement', 'zero coupure', 'independant du reseau', 'off grid', 'autonomie totale'],
+    content:
+      "AUTONOMIE TOTALE / SANS RÉSEAU : Pour un site sans réseau électrique (village, zone isolée), une installation solaire autonome (off-grid) avec un parc de batteries et un onduleur hybride/chargeur est la solution. Le dimensionnement est critique : il faut couvrir les besoins de jour ET de nuit, avec un parc de batteries dimensionné et un groupe de secours possible. Explique que c'est exactement le métier du bureau d'études et oriente vers /devis en demandant la liste précise des appareils et leurs heures d'usage.",
+  },
+  {
+    id: 'qualification-solaire',
+    keywords: ['conseil solaire', 'aide solaire', 'quel panneau', 'quelle puissance solaire', 'projet solaire', 'installateur solaire'],
+    content:
+      "QUALIFICATION PROJET SOLAIRE : Quand un client demande conseil pour un projet solaire, le chatbot doit poser ces questions dans l'ordre (1 par message) : 1) Installation isolée (pas de réseau) ou raccordée au réseau ? 2) Quelle consommation quotidienne en kWh ou quels appareils à alimenter (frigo, TV, climatiseur, pompes...) ? 3) Pour un site isolé : autonomie souhaitée en jours sans soleil (1-2 jours recommandé) ? 4) Type de toiture (tuiles, tôle, toit plat) ou montage au sol ? 5) Budget indicatif ? Puis synthétiser les besoins recommandés (panneaux, onduleur hybride ou régulateur MPPT, batteries LiFePO4, structures) et rediriger vers /devis pour chiffrage précis.",
+  },
+  {
+    id: 'qualification-groupe',
+    keywords: ['conseil groupe', 'quel groupe', 'quelle puissance groupe', 'groupe pour chantier', 'groupe pour maison'],
+    content:
+      "QUALIFICATION GROUPE ELECTROGENE : Questions à poser (1 par message) : 1) Usage : secours maison, chantier, commerce, événementiel ? 2) Puissance nécessaire : lister les appareils à alimenter simultanément (additionner les watts, diviser par 0.8 pour la marge) ? 3) Durée d'utilisation quotidienne et fréquence des coupures ? 4) Environnement : intérieur/locaux (groupe ouvert), extérieur (insonorisé), itinérant (mobile) ? 5) Sensibilité électronique (ordinateurs, matériel médical → groupe inverter recommandé) ? Règles empiriques : maison 2-3 pièces ≈ 3-6 kVA, frigo+TV+éclairage ≈ 2-3 kVA, chantier (bétonnière, perceuses) ≈ 5-8 kVA, commerce avec climatiseurs ≈ 10-20 kVA. Rediriger vers /devis.",
+  },
+  {
+    id: 'qualification-eclairage',
+    keywords: ['conseil eclairage', 'combien de lampadaires', 'eclairer une rue', 'eclairer un terrain', 'lampadaires necessaires'],
+    content:
+      "QUALIFICATION ECLAIRAGE PUBLIC : Questions à poser (1 par message) : 1) Zone à éclairer : rue, parking, terrain de sport, chemin, cour d'entreprise ? 2) Dimensions (longueur en mètres, largeur) ? 3) Niveau d'éclairement souhaité : circulation (15-20 lux), zone piétonne (10-15 lux), parking (10-20 lux) ? 4) Espacement des mâts (généralement 3-4 fois la hauteur : mât 6m ≈ espacement 20-25m) ? 5) Alimentation : réseau disponible ou solaire autonome ? 6) Hauteur des mâts (4-6m résidentiel, 6-9m routier, 10-12m grands espaces) ? Rediriger vers /devis avec ces éléments.",
+  },
+  {
+    id: 'objection-prix',
+    keywords: ['trop cher', 'couteux', 'prix eleve', 'hors budget', 'moins cher ailleurs', 'concurrent moins cher'],
+    content:
+      "OBJECTION PRIX : Réponse à adopter : 1) Valoriser la qualité et la durabilité (produits sélectionnés, SAV local en Côte d'Ivoire, pièces disponibles) 2) Rappeler le rapport qualité/prix et la fiabilité énergétique (un matériel bas de gamme coûte plus cher à long terme) 3) Proposer des alternatives dans la gamme (marques ou puissances inférieures) 4) Suggérer un devis pour négociation avec l'équipe via /devis 5) Rappeler la livraison gratuite dès 100 000 FCFA. Ne jamais dénigrer la concurrence, rester factuel sur les atouts GUESS ENERGY.",
+  },
+  {
+    id: 'objection-reflexion',
+    keywords: ['je reflechis', 'plus tard', 'pas maintenant', 'je reviendrai', 'pas pret'],
+    content:
+      "OBJECTION REFLEXION : Rester accueillant et utile : 1) Proposer d'enregistrer les besoins et envoyer un devis gratuit via /devis (le devis reste valable, l'équipe répond sous 24h) 2) Proposer un document d'information sur le dimensionnement 3) Indiquer que l'équipe est joignable par WhatsApp pour toutes questions techniques 4) Rappeler les horaires (Lundi-Samedi 08h00-18h00). Ne jamais insister lourdement.",
+  },
+  {
+    id: 'comparaison-solaire',
+    keywords: ['lithium ou gel', 'lithium vs gel', 'quelle batterie choisir', 'batterie recommandee', 'difference lithium gel'],
+    content:
+      "COMPARAISON BATTERIES : Lithium LiFePO4 : durée de vie 3000-6000 cycles, décharge profonde 80-100%, sans entretien, légère, la norme actuelle — recommandée pour tout usage sérieux malgré un prix initial plus élevé. Gel/AGM : 500-1200 cycles, décharge recommandée 50%, sans entretien, moins chère à l'achat — adaptée au solaire stationnaire à petit budget. Plomb ouvert : stationnaire uniquement, local ventilé obligatoire, entretien régulier. Conseil type : installation solaire familiale → Lithium LiFePO4 ; budget serré usage occasionnel → Gel.",
+  },
+  {
+    id: 'comparaison-onduleur',
+    keywords: ['mppt ou pwm', 'mppt vs pwm', 'regulateur recommande', 'onduleur hybride ou regulateur', 'string ou micro onduleur'],
+    content:
+      "COMPARAISON CONVERSION SOLAIRE : Régulateur MPPT : rendement 95-99%, adapté aux systèmes ≥ 400W et à toutes installations sérieuses — recommandé. PWM : moins cher, rendement 70-80%, uniquement pour petits systèmes (< 400W) où panneau et batterie ont la même tension. Onduleur hybride : gère simultanément réseau/panneaux/batteries, idéal pour la continuité de service — recommandé pour maison avec coupures fréquentes. String inverter : installations raccordées au réseau sans batteries. Micro-onduleurs : optimisent panneau par panneau, utiles en cas d'ombrage partiel.",
+  },
+  {
+    id: 'comparaison-disjoncteur',
+    keywords: ['type ac ou type a', 'disjoncteur differentiel choisir', 'interrupteur differentiel recommande', 'hpi', 'type f'],
+    content:
+      "COMPARAISON DIFFERENTIELS : Type AC : détection sinusoïdale standard, usage général résidentiel — le plus économique. Type A : détecte aussi les courants pulsés (appareils électroniques, plaques de cuisson, lave-linge, bornes de recharge) — recommandé pour les circuits électroniques modernes. Type F/Hpi : résiste aux courants de fuite complexes (climatiseurs onduleurs, variateurs de vitesse) — recommandé pour pompes à chaleur et climatisations. Répartition typique d'un tableau : 1 différentiel 40A/30mA pour 8 disjoncteurs max. Rediriger vers /devis pour composition complète du tableau.",
+  },
+  {
+    id: 'convertisseur-puissance',
+    keywords: ['combien de kva', 'conversion watts', 'kw en kva', 'watts necessaires', 'calcul puissance'],
+    content:
+      "CONVERSIONS PUISSANCE : 1 kVA ≈ 1000 VA ; pour les groupes électrogènes (cos φ 0.8) : 1 kVA = 800 W utiles, soit kVA = Watts / 800. Exemples d'appareils : frigo 150-300 W (démarrage x3), TV 80-150 W, climatiseur 1 CV 900-1300 W (démarrage x2-3), pompe à eau 750-1500 W (démarrage x3), micro-ondes 1000 W, éclairage LED 7-10 W/point, ordinateur 100-300 W, bétonnière 750-1500 W. Formule groupe : additionner les watts des appareils simultanés + 20% marge, diviser par 800 = kVA nécessaires.",
+  },
+  {
+    id: 'convertisseur-solaire',
+    keywords: ['combien de panneaux', 'nombre panneaux solaires', 'dimensionnement solaire', 'calcul solaire', 'kwc necessaire'],
+    content:
+      "DIMENSIONNEMENT SOLAIRE : 1) Consommation quotidienne = additionner (Watts × heures) de chaque appareil = Wh/jour. 2) Production nécessaire = Wh/jour ÷ 0.75 (pertes système) ÷ heures d'ensoleillement (4.5-5h en Côte d'Ivoire) = Watts-panneaux. 3) Nombre de panneaux = Watts-panneaux ÷ puissance unitaire (400-550 W courant). 4) Batteries = Wh/jour × jours d'autonomie ÷ tension système (12/24/48V) ÷ 0.8 (décharge LiFePO4) = Ah. Exemple : 3000 Wh/jour ≈ 900 Wc (2-3 panneaux 450W) + batterie 24V 200Ah. Rediriger vers /devis pour validation par le bureau d'études.",
+  },
+  {
+    id: 'faq-rapide',
+    keywords: ['questions frequentes', 'faq', 'rappel informations', 'recapitulatif'],
+    content:
+      "FAQ RAPIDE : Livraison gratuite dès 100 000 FCFA, sinon 5 000 FCFA, délais 24-72h. Aucun paiement en ligne, confirmation par téléphone/WhatsApp. Commande possible sans compte. Devis gratuit sous 24h via /devis. Horaires Lundi-Samedi 08h00-18h00. 4 pôles produits : Électricité Bâtiment, Éclairage Public, Énergie Solaire, Groupes Électrogènes. Bureau d'études pour dimensionnement. SAV et maintenance assurés localement.",
+  },
+  {
+    id: 'remerciement-fin',
+    keywords: ['merci', 'thanks', 'parfait', 'super', 'genial', 'excellent', 'nickel'],
+    content:
+      "REMERCIEMENTS : Répondre chaleureusement : « Merci à vous ! N'hésitez pas si vous avez d'autres questions. Pour un chiffrage précis, notre équipe répond sous 24h via /devis. Bonne journée ! » Ne jamais relancer commercialement de manière insistante après un remerciement.",
+  },
+  {
+    id: 'politesse-retour',
+    keywords: ['a bientot', 'au revoir', 'bonne journee', 'bye', 'a plus'],
+    content:
+      "CONGÉS : Répondre poliment : « Au revoir et à bientôt chez GUESS ENERGY ! L'équipe reste disponible par WhatsApp et sur le site pour vos besoins en matériel électrique, solaire, éclairage et groupes électrogènes. Bonne journée ! »",
+  },
 ];
 /**
  * Retourne le bloc de connaissances à injecter dans le prompt système :
