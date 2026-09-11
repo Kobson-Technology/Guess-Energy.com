@@ -1,8 +1,16 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { ArrowRight, BatteryCharging, Cable, Factory, Lightbulb, Sun, Zap, ShieldCheck, Award, Truck, Clock } from 'lucide-react';
 import { productService } from '@/services/product.service';
 import { siteService } from '@/services/site.service';
 import type { ProductSummary } from '@/types';
+
+export const metadata: Metadata = {
+  title: 'Boutique en ligne — Matériel électrique professionnel',
+  description:
+    'Achetez votre matériel électrique en ligne chez GUESS ENERGY : sélection de produits professionnels, stock réel consultable, prix TTC en FCFA, livraison en Côte d\'Ivoire.',
+  alternates: { canonical: '/boutique' },
+};
 
 export const revalidate = 60;
 

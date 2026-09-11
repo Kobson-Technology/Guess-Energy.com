@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { CheckCircle, Home, MessageCircle, Package, ShoppingBag } from 'lucide-react';
-export const metadata = { title: 'Commande confirmée — GUESS ENERGY + SARL', description: 'Votre commande a été enregistrée avec succès.' };
+export const metadata = { title: 'Commande confirmée — GUESS ENERGY + SARL', description: 'Votre commande a été enregistrée avec succès.', robots: { index: false, follow: false } };
 export default async function SuccessPage({ searchParams }: { searchParams: Promise<{ reference?: string; whatsapp?: string }> }) {
   const params = await searchParams; const reference = params.reference ?? '—';
   return <>

@@ -19,9 +19,9 @@ export const BOUTIQUE_ID = parseIntSafe(BOUTIQUE_ID_ENV, 3);
 
 export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME ?? 'GUESS ENERGY SARL';
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/+$/, '');
-export const SITE_TAGLINE = 'Votre partenaire en matériel électrique';
+export const SITE_TAGLINE = 'Matériel électrique, solaire & groupes électrogènes';
 export const SITE_DESCRIPTION =
-  'GUESS ENERGY + SARL — distributeur professionnel de matériel électrique : câbles, disjoncteurs, tableau électrique, éclairage LED, prises et interrupteurs. Qualité, fiabilité et prix compétitifs.';
+  'GUESS ENERGY + SARL, distributeur de matériel électrique en Côte d\'Ivoire : câbles, disjoncteurs, tableaux électriques, éclairage LED et public, panneaux solaires, batteries et groupes électrogènes. Qualité, fiabilité et prix compétitifs, livraison 24-72h.';
 
 /** Numéro WhatsApp (format international sans "+", ex : "22507000000"). */
 export const WHATSAPP_NUMBER =

@@ -7,6 +7,7 @@ import { AddToCartButton } from '@/components/catalogue/AddToCartButton';
 import { ProductGrid } from '@/components/catalogue/ProductCard';
 import { formatFCFA } from '@/lib/utils';
 import { SITE_NAME, SITE_URL } from '@/lib/constants';
+import { breadcrumbJsonLd } from '@/lib/seo';
 
 export const revalidate = 60;
 
@@ -56,6 +57,21 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   };
   return <>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }} />
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(
+          breadcrumbJsonLd([
+            { name: 'Accueil', path: '/' },
+            { name: 'Produits', path: '/produits' },
+            ...(product.categorySlug
+              ? [{ name: product.categoryName ?? 'Catégorie', path: `/categories/${product.categorySlug}` }]
+              : []),
+            { name: product.name },
+          ]),
+        ),
+      }}
+    />
     <section className="section"><div className="container">
       <div className="breadcrumbs"><Link href="/">Accueil</Link><span>/</span><Link href="/produits">Produits</Link><span>/</span><span>{product.name}</span></div>
       <div className="pdp-layout">

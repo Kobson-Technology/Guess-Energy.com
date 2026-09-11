@@ -61,7 +61,7 @@ export default async function HomePage() {
           <div className="hero-copy">
             <span className="section-kicker" style={{ color: 'var(--gold-500)' }}>GUESS ENERGY + SARL</span>
             <h1>
-              Votre partenaire en <em>électricité & énergie</em>
+              Matériel électrique, <em>solaire &amp; groupes électrogènes</em> en Côte d'Ivoire
             </h1>
             <p>
               Distribution de matériels électriques, réalisation de travaux, études, conseils et solutions

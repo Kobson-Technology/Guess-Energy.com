@@ -1,14 +1,38 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { Filter, Search, SlidersHorizontal } from 'lucide-react';
 import { productService } from '@/services/product.service';
 import { ProductGrid, EmptyCatalogue } from '@/components/catalogue/ProductCard';
 import { MobileFilters } from '@/components/catalogue/MobileFilters';
 import { PAGE_SIZE_DEFAULT } from '@/lib/constants';
 import { parseIntSafe } from '@/lib/utils';
+import { filteredPageRobots } from '@/lib/seo';
 
 export const revalidate = 60;
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+/**
+ * SEO : la page liste (/produits) est indexée avec une description riche ;
+ * les pages filtrées (?q=, ?categoryId=, ?available=1) sont en noindex pour
+ * éviter le contenu dupliqué et concentrer le budget de crawl.
+ */
+export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+  const params = await searchParams;
+  const q = (Array.isArray(params.q) ? params.q[0] : params.q)?.trim() ?? '';
+  const isFiltered = Boolean(
+    q || params.categoryId || params.sort || params.available,
+  );
+  return {
+    title: isFiltered
+      ? 'Recherche dans le catalogue'
+      : 'Catalogue de matériel électrique — Câbles, disjoncteurs, solaire, éclairage',
+    description:
+      'Catalogue complet GUESS ENERGY : câbles électriques, disjoncteurs et tableaux, éclairage LED et public, panneaux solaires, batteries, groupes électrogènes. Prix TTC en FCFA, stock réel, livraison 24-72h en Côte d\'Ivoire.',
+    alternates: { canonical: '/produits' },
+    robots: filteredPageRobots(isFiltered),
+  };
+}
 
 function value(params: Record<string, string | string[] | undefined>, key: string) {
   const v = params[key];
@@ -44,7 +68,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Sea
       <section className="page-hero"><div className="container">
         <div className="breadcrumbs"><Link href="/">Accueil</Link><span>/</span><span>Produits</span></div>
         <h1>Catalogue de matériel électrique</h1>
-        <p>Consultez notre catalogue synchronisé avec Kobson GesCom. Prix et disponibilité sont mis à jour côté serveur.</p>
+        <p>Câbles, disjoncteurs, tableaux électriques, éclairage LED et public, panneaux solaires, batteries et groupes électrogènes. Prix TTC et disponibilité mis à jour en continu.</p>
       </div></section>
       <section className="section"><div className="container">
         <div className="toolbar">

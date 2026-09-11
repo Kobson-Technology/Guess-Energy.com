@@ -7,6 +7,7 @@ import { Footer } from '@/components/layout/Footer';
 import { ChatBot } from '@/components/chatbot/ChatBot';
 import { siteService } from '@/services/site.service';
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from '@/lib/constants';
+import { organizationJsonLd, websiteJsonLd } from '@/lib/seo';
 import './globals.css';
 
 const manrope = Manrope({ subsets: ['latin'], display: 'swap' });
@@ -18,6 +19,17 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
+  keywords: [
+    'matériel électrique Côte d\'Ivoire',
+    'distributeur matériel électrique Abidjan',
+    'panneaux solaires Côte d\'Ivoire',
+    'groupe électrogène Abidjan',
+    'éclairage public LED',
+    'disjoncteur tableau électrique',
+    'câble électrique RO2V',
+    'batterie solaire lithium',
+    'achat matériel électrique Abidjan',
+  ],
   openGraph: {
     type: 'website',
     locale: 'fr_FR',
@@ -33,6 +45,9 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
   alternates: { canonical: '/' },
+  ...(process.env.GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
+    : {}),
 };
 
 export const viewport: Viewport = {
@@ -45,18 +60,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const shop = await siteService.getShopInfo().catch(() => null);
   const waNumber = shop?.whatsappNumber ?? '';
 
-  const orgJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: SITE_NAME,
-    url: SITE_URL,
-    logo: `${SITE_URL}/logo.png`,
-    telephone: shop?.phone ?? undefined,
-    email: shop?.email ?? undefined,
-    address: shop?.address
-      ? { '@type': 'PostalAddress', streetAddress: shop.address, addressLocality: shop.city, addressCountry: 'CI' }
-      : undefined,
-  };
+  const orgJsonLd = organizationJsonLd(shop);
+  const webJsonLd = websiteJsonLd();
 
   return (
     <html lang="fr" className={manrope.className}>
@@ -106,6 +111,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+          />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(webJsonLd) }}
           />
         </CartProvider>
       </body>
